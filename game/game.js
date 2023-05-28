@@ -1,6 +1,7 @@
 const gameState = {
   isGameOver: false,
   score: 0,
+  scoreDigits: [],
 };
 
 const maxWidth = 414;

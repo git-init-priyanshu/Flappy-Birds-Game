@@ -223,14 +223,15 @@ class GameScene extends Phaser.Scene {
       .split("");
     let e = scoreArr.length / 2;
     let x = game.config.width / 2 - e * 30;
-    let scoreDisplay = this.add.sprite(x, 100, "0");
+    // destroys previous score
+    gameState.scoreDigits.forEach((digit) => digit.destroy());
+    // Clear the array
+    gameState.scoreDigits = [];
+    // Iterate over the score digits and display them
     for (let i = 0; i < scoreArr.length; i++) {
-      // removing previous score
-      scoreDisplay.destroy();
-      // displaying new score
-      scoreDisplay = this.add.sprite(x, 100, scoreArr[i]);
-      // displaying it above the pipes
-      scoreDisplay.setDepth(1);
+      let scoreDigit = this.add.sprite(x, 100, scoreArr[i]);
+      scoreDigit.setDepth(1);
+      gameState.scoreDigits.push(scoreDigit);
       x += 30;
     }
   }
