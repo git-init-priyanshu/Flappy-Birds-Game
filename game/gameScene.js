@@ -1,6 +1,3 @@
-let score = 0;
-let scoreArr = score.toString().split("");
-
 class GameScene extends Phaser.Scene {
   constructor() {
     super({ key: "GameScene" });
@@ -42,16 +39,6 @@ class GameScene extends Phaser.Scene {
       "bg"
     );
 
-    // Score
-    // logic to make score centered on screen dynamically
-    let e = scoreArr.length / 2;
-    let x = game.config.width / 2 - e * 30;
-    for (let i = 0; i < scoreArr.length; i++) {
-      const score = this.add.sprite(x, 100, scoreArr[i]);
-      score.setDepth(1);
-      x += 30;
-    }
-
     // Pipes
     const pipes = this.physics.add.group();
     gameState.pipes = pipes;
@@ -73,7 +60,7 @@ class GameScene extends Phaser.Scene {
 
       const height = min - Math.floor(Math.random() * range);
 
-      const initialPosition = game.config.width + 52;
+      const initialPosition = 414 + 52;
 
       const pipeInv = this.physics.add.sprite(
         initialPosition,
@@ -158,7 +145,7 @@ class GameScene extends Phaser.Scene {
         this.scene.start("StartScene");
       });
     });
-    this.physics.add.overlap(pipes, gameState.bird, () => {
+    this.physics.add.collider(pipes, gameState.bird, () => {
       gameState.die.play();
 
       // Disabling the audio
@@ -213,6 +200,38 @@ class GameScene extends Phaser.Scene {
     if (!gameState.isGameOver) {
       gameState.background.tilePositionX += 0.1;
       gameState.platform.tilePositionX += 0.5;
+    }
+
+    // Score
+    // logic to get the score
+    gameState.pipes.children.iterate(function (pipe) {
+      if (
+        pipe.getBounds().right < gameState.bird.getBounds().left &&
+        !pipe.getData("scored")
+      ) {
+        // Pipe has been successfully passed
+        gameState.score += 1;
+
+        // Set a flag to prevent multiple scoring for the same pipe
+        pipe.setData("scored", true);
+      }
+    });
+
+    // logic to make score centered on screen dynamically
+    let scoreArr = Math.floor(gameState.score / 2)
+      .toString()
+      .split("");
+    let e = scoreArr.length / 2;
+    let x = game.config.width / 2 - e * 30;
+    let scoreDisplay = this.add.sprite(x, 100, "0");
+    for (let i = 0; i < scoreArr.length; i++) {
+      // removing previous score
+      scoreDisplay.destroy();
+      // displaying new score
+      scoreDisplay = this.add.sprite(x, 100, scoreArr[i]);
+      // displaying it above the pipes
+      scoreDisplay.setDepth(1);
+      x += 30;
     }
   }
 }
