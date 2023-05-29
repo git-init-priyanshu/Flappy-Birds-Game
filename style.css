@@ -1,4 +1,23 @@
+@import url("https://fonts.googleapis.com/css2?family=Audiowide&display=swap");
+
 * {
   margin: 0;
   padding: 0;
+  font-family: "Audiowide", cursive;
+  color: #000000;
+  /* color: #7bff56; */
+}
+input {
+  transform: translate(-50%, -50%);
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  width: 184px;
+  padding: 2px;
+  &:focus {
+    outline: none;
+    border: 1px sold #ded798;
+    border-radius: 0;
+  }
 }
