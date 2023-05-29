@@ -202,14 +202,16 @@ class StartScene extends Phaser.Scene {
       gameState.text2.setVisible(false);
     }
 
-    let count = 0;
     if (usersArr.length > 1) {
+      let count = 0;
       // Starting new Scene
       for (let i = 0; i < usersArr.length; i++) {
         if (usersArr[i].isReady === true) {
           count++;
         }
       }
+      // console.log(count);
+      // console.log(usersArr.length);
       // console.log(count, usersArr.length);
       if (count === usersArr.length) {
         console.log("new");

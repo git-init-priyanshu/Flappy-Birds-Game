@@ -25,7 +25,6 @@ io.on("connection", (socket) => {
     console.log(users);
     socket.broadcast.emit("user-joined", users);
     // giving the user initial array
-    // socket.broadcast.to(socket.id).emit("get-array", users);
     io.to(socket.id).emit("get-array", users);
   });
 
@@ -36,6 +35,7 @@ io.on("connection", (socket) => {
       }
     }
     socket.broadcast.emit("user-ready", users);
+    io.to(socket.id).emit("get-array", users);
     console.log(users);
   });
 
