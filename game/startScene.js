@@ -112,10 +112,45 @@ class StartScene extends Phaser.Scene {
         game.config.height / 2 + 133.5 + 14.5 + 10,
         "play"
       )
-      .setInteractive()
-      .on("pointerdown", () => {
-        socket.emit("ready", userName);
-      });
+      .setInteractive();
+    playBtn.on("pointerdown", () => {
+      socket.emit("ready", userName);
+    });
+    playBtn.on("pointerover", () => {
+      document.querySelector("canvas").style.cursor = "pointer";
+    });
+    playBtn.on("pointerout", () => {
+      document.querySelector("canvas").style.cursor = "default";
+    });
+    this.add.text(
+      game.config.width / 2 - 20,
+      game.config.height / 2 + 133.5 + 14.5 + 10 + 15,
+      "Ready",
+      {
+        fontFamily: "Audiowide",
+        fontSize: "12px",
+        color: "#000000",
+      }
+    );
+
+    // Displaying online players
+    gameState.icon1 = this.add.sprite(20, 20, "red-bird");
+    gameState.text1 = this.add.text(45, 10, "", {
+      fontFamily: "Audiowide",
+      color: "#ffffff",
+    });
+    gameState.icon2 = this.add.sprite(20, 50, "yellow-bird");
+    gameState.text2 = this.add.text(45, 40, "", {
+      fontFamily: "Audiowide",
+      color: "#ffffff",
+    });
+    //making them invisible (for now)
+    gameState.icon1.setScale(0.75, 0.75);
+    gameState.icon2.setScale(0.75, 0.75);
+    gameState.icon1.setVisible(false);
+    gameState.icon2.setVisible(false);
+    gameState.text1.setVisible(false);
+    gameState.text2.setVisible(false);
   }
 
   update() {
@@ -134,47 +169,56 @@ class StartScene extends Phaser.Scene {
 
     // For multiplayer
     // Displaying online players
-    let arr = usersArr;
-    if (arr.length > 1) {
+    if (usersArr.length > 1) {
+      let arr = [];
       // removing current user
-      for (let i = 0; i < arr.length; i++) {
-        if (arr[i].name === userName) {
-          arr.splice(i, 1);
+      for (let i = 0; i < usersArr.length; i++) {
+        if (usersArr[i].name !== userName) {
+          arr.push(usersArr[i]);
         }
       }
+      gameState.icon1.setVisible(false);
+      gameState.icon2.setVisible(false);
+      gameState.text1.setVisible(false);
+      gameState.text2.setVisible(false);
 
-      const select = ["red-bird", "yellow-bird"];
-      let char;
-      let text;
-      for (let i = 0; i < arr.length; i++) {
-        // Destroy previous sprite and text objects (if any)
-        if (char) {
-          char.destroy();
+      if (arr.length > 0) {
+        gameState.icon1.setVisible(true);
+        gameState.text1.setVisible(true);
+        gameState.text1.setText(arr[0].name);
+        gameState.text1.setColor(`${arr[0].isReady ? "#7bff56" : "#ffffff"}`);
+
+        if (arr.length > 1) {
+          gameState.icon2.setVisible(true);
+          gameState.text2.setVisible(true);
+          gameState.text2.setText(arr[1].name);
+          gameState.text2.setColor(`${arr[1].isReady ? "#7bff56" : "#ffffff"}`);
         }
-        if (text) {
-          text.destroy();
+      }
+    } else {
+      gameState.icon1.setVisible(false);
+      gameState.icon2.setVisible(false);
+      gameState.text1.setVisible(false);
+      gameState.text2.setVisible(false);
+    }
+
+    let count = 0;
+    if (usersArr.length > 1) {
+      // Starting new Scene
+      for (let i = 0; i < usersArr.length; i++) {
+        if (usersArr[i].isReady === true) {
+          count++;
         }
-        char = this.add.sprite(20, 20 + i * 30, select[i]);
-        text = this.add.text(45, 10 + i * 30, `${arr[i].name}`, {
-          fontFamily: "Audiowide",
-          color: `${arr[i].isReady ? "#7bff56" : "#ffffff"}`,
-        });
+      }
+      // console.log(count, usersArr.length);
+      if (count === usersArr.length) {
+        console.log("new");
+        setTimeout(() => {
+          this.scene.stop("StartScene");
+          this.scene.start("GameScene");
+        }, 3000);
       }
     }
-    // this.add.sprite(20, 20, "red-bird");
-    // this.add.text(45, 10, `${arr[0].name}`, {
-    //   fontFamily: "Audiowide",
-    //   color: `${arr[0].isReady ? "#7bff56" : "#ffffff"}`,
-    // });
-
-    // // If all 3 users are connected
-    // if (arr.length > 1) {
-    //   this.add.sprite(20, 50, "yellow-bird");
-    //   this.add.text(45, 40, `${arr[1].name}`, {
-    //     fontFamily: "Audiowide",
-    //     color: `${arr[1].isReady ? "#7bff56" : "#ffffff"}`,
-    //   });
-    // }
 
     gameState.background.tilePositionX += 0.1;
     gameState.platform.tilePositionX += 0.5;
